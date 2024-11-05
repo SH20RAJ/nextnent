@@ -1,6 +1,5 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import { NextUIProvider } from "@nextui-org/react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,19 +13,17 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Nextnent - Component Library",
-  description: "Nextnent - Component Library for Next.js using shacn and NextUI",
+  title: "NextNent",
+  description: "Marketplace for Modern UI Components",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextUIProvider>
         {children}
-        </NextUIProvider>
       </body>
     </html>
   );

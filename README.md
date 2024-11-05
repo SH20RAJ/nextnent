@@ -1,10 +1,3 @@
-[]: # Title: NextNent
-[]: # Description: NextNent is a marketplace where developers can share, buy, and open-source UI components built with Shadcn and NextUI.
-[]: # Tags: Next.js, Shadcn, NextUI, UI Components, Marketplace, Open Source, Paid Components
-[]: # Date: 2022-10-10
-[]: # Last Updated: 2022-10-10
-[]: # Contributors: SH20RAJ
-
 # NextNent
 
 ![License](https://img.shields.io/github/license/SH20RAJ/nextnent?style=for-the-badge)
