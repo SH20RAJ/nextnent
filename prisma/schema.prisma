@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId         String   @id @default(uuid())
+  username       String   @unique
+  email          String   @unique
+  passwordHash   String
+  profilePicture String?
+  bio            String?
+  accountType    String
+  socialLinks    Json?
+  joinedAt       DateTime @default(now())
+  isAdmin        Boolean  @default(false)
+
+  components     Component[] @relation("UserComponents")
+  purchases      Purchase[]
+  reviews        Review[]
+  downloads      Download[]
+  favorites      Favorite[]
+  collections    Collection[]
+  userBadges     UserBadge[]
+  reports        Report[]
+
+  @@map("users")
+}
+
+model Component {
+  componentId    String   @id @default(uuid())
+  title          String
+  description    String
+  price          Decimal  @default(0.0) @db.Decimal(10, 2)
+  licenseId      Int
+  downloadLink   String
+  sourceCodeLink String
+  thumbnailUrl   String?
+  demoUrl        String?
+  isOpenSource   Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  downloads      Int      @default(0)
+  views          Int      @default(0)
+  ratingAvg      Decimal? @default(0.0) @db.Decimal(3, 2)
+  status         String
+
+  userId         String
+  user           User        @relation("UserComponents", fields: [userId], references: [userId])
+  license        License     @relation(fields: [licenseId], references: [licenseId])
+
+  downloadRecords Download[]
+  purchases       Purchase[]
+  reviews         Review[]
+  tags            ComponentTag[]
+  favorites       Favorite[]
+  collections     CollectionComponent[]
+  reports         Report[]
+  categoryId     Int?
+  category       Category? @relation(fields: [categoryId], references: [categoryId]) // Optional relation for categories
+
+  @@map("components")
+}
+
+model Download {
+  downloadId   String   @id @default(uuid())
+  downloadDate DateTime @default(now())
+  downloadType String
+
+  userId       String
+  user         User      @relation(fields: [userId], references: [userId])
+
+  componentId  String
+  component    Component @relation(fields: [componentId], references: [componentId])
+
+  @@map("downloads")
+}
+
+model Category {
+  categoryId Int        @id @default(autoincrement())
+  name       String     @unique
+
+  components Component[]
+
+  @@map("categories")
+}
+
+model Tag {
+  tagId      Int        @id @default(autoincrement())
+  name       String     @unique
+
+  components ComponentTag[]
+
+  @@map("tags")
+}
+
+model ComponentTag {
+  componentTagId String   @id @default(uuid())
+
+  componentId     String
+  component       Component @relation(fields: [componentId], references: [componentId])
+
+  tagId           Int
+  tag             Tag       @relation(fields: [tagId], references: [tagId])
+
+  @@unique([componentId, tagId])
+  @@map("component_tags")
+}
+
+model Purchase {
+  purchaseId   String   @id @default(uuid())
+  purchaseDate DateTime @default(now())
+  amount       Decimal  @db.Decimal(10, 2)
+
+  userId       String
+  user         User      @relation(fields: [userId], references: [userId])
+
+  componentId  String
+  component    Component @relation(fields: [componentId], references: [componentId])
+
+  @@map("purchases")
+}
+
+model Review {
+  reviewId     String   @id @default(uuid())
+  rating       Int
+  comment      String?
+  createdAt    DateTime @default(now())
+
+  userId       String
+  user         User      @relation(fields: [userId], references: [userId])
+
+  componentId  String
+  component    Component @relation(fields: [componentId], references: [componentId])
+
+  @@map("reviews")
+}
+
+model License {
+  licenseId    Int       @id @default(autoincrement())
+  name         String
+  description  String?
+
+  components   Component[]
+
+  @@map("licenses")
+}
+
+model Favorite {
+  favoriteId   String   @id @default(uuid())
+  addedAt      DateTime @default(now())
+
+  userId       String
+  user         User      @relation(fields: [userId], references: [userId])
+
+  componentId  String
+  component    Component @relation(fields: [componentId], references: [componentId])
+
+  @@map("favorites")
+}
+
+model Collection {
+  collectionId String   @id @default(uuid())
+  name         String
+  description  String?
+  createdAt    DateTime @default(now())
+
+  userId       String
+  user         User      @relation(fields: [userId], references: [userId])
+
+  components   CollectionComponent[]
+
+  @@map("collections")
+}
+
+model CollectionComponent {
+  collectionComponentId String @id @default(uuid())
+
+  collectionId          String
+  collection            Collection @relation(fields: [collectionId], references: [collectionId])
+
+  componentId           String
+  component             Component @relation(fields: [componentId], references: [componentId])
+
+  @@unique([collectionId, componentId])
+  @@map("collection_components")
+}
+
+model UserBadge {
+  userBadgeId  String   @id @default(uuid())
+  earnedAt     DateTime @default(now())
+
+  userId       String
+  user         User      @relation(fields: [userId], references: [userId])
+
+  badgeId      Int
+  badge        Badge     @relation(fields: [badgeId], references: [badgeId])
+
+  @@map("user_badges")
+}
+
+model Badge {
+  badgeId      Int       @id @default(autoincrement())
+  name         String
+  description  String?
+
+  userBadges   UserBadge[]
+
+  @@map("badges")
+}
+
+model Report {
+  reportId     String   @id @default(uuid())
+  reportReason String
+  status       String   @default("Open")
+  createdAt    DateTime @default(now())
+
+  userId       String
+  user         User      @relation(fields: [userId], references: [userId])
+
+  componentId  String
+  component    Component @relation(fields: [componentId], references: [componentId])
+
+  @@map("reports")
+}
