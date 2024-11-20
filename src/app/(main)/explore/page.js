@@ -127,7 +127,9 @@ export default function ExplorePage() {
               Pricing
             </Link>
           </nav>
-          <Button>Sign In</Button>
+          <Link href={"/login"}>
+            <Button>Sign In</Button>
+          </Link>
         </div>
       </header>
       <main className="flex-1">
